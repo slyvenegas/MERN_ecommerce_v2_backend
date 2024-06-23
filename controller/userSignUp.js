@@ -1,54 +1,60 @@
-const userModel = require("../models/userModel")
-const bcrypt = require('bcrypt');
-
+const userModel = require("../models/userModel");
+const bcrypt = require('bcryptjs');
 
 async function userSignUpController(req, res) {
     try {
-        const { email, password, name } = req.body
+        const { email, password, name } = req.body;
 
-        console.log("rep.body",req.body)
+        // Verificar si ya existe un usuario con el mismo email
+        const existingUser = await userModel.findOne({ email });
 
-        if (!email) {
-            throw new error("Please provide email")
+        if (existingUser) {
+            return res.status(400).json({
+                message: "User already exists",
+                error: true,
+                success: false
+            });
         }
 
-        if (!password) {
-            throw new error("Please provide password")
+        // Validar que se proporcionen todos los datos necesarios
+        if (!email || !password || !name) {
+            return res.status(400).json({
+                message: "Please provide email, password, and name.",
+                error: true,
+                success: false
+            });
         }
 
-        if (!name) {
-            throw new error("Please provide name")
-        }
-
+        // Encriptar la contraseña
         const salt = bcrypt.genSaltSync(10);
-        const hashPassword = await bcrypt.hashSync(password, salt);
+        const hashPassword = bcrypt.hashSync(password, salt);
 
-        if(!hashPassword){
-            throw new Error("Something is wrong")
-        }
+        // Crear un nuevo usuario con los datos proporcionados
+        const newUser = new userModel({
+            email,
+            password: hashPassword,
+            name,
+            role: "GENERAL"
+        });
 
-        const payload = {
-            ...req.body,
-            password : hashPassword
-        }
-
-        const userData = new userModel(payload)
-        const saveUser = userData.save()
+        // Guardar el usuario en la base de datos
+        const savedUser = await newUser.save();
 
         res.status(201).json({
-            data : saveUser,
-            succes : true,
-            error : false,
-            message : "User created succesfully!"
-        })
+            data: savedUser,
+            success: true,
+            error: false,
+            message:  "User created successfully."
+        });
 
     } catch (err) {
-        res.json({
-            message: err,
+        // Capturar cualquier error y devolver una respuesta adecuada
+        res.status(500).json({
+            message: err.message || "An error occurred while creating the user.",
             error: true,
-            sucess: false,
-        })
+            success: false
+        });
     }
 }
 
-module.exports = userSignUpController
+module.exports = userSignUpController;
