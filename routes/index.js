@@ -12,6 +12,7 @@ const allUsers = require('../controller/allUser');
 const updateUser = require('../controller/updateUser');
 const UploadProductController = require('../controller/uploadProduct');
 const getProductController = require('../controller/getProduct');
+const updateProductController = require('../controller/updateProduct');
 
 
 
@@ -30,8 +31,8 @@ router.post("/update-user",authToken,updateUser)
 
 //product
 router.post("/upload-product",authToken,UploadProductController)
-router.get("/all-products",getProductController)
-
+router.get("/get-product",getProductController)
+router.post("/update-product",authToken,updateProductController)
 
 
 
