@@ -16,9 +16,9 @@ app.use(cookieParser());
 
 app.use("/api", router);
 
-// No usar app.listen() en entornos sin servidor (Vercel)
 connectDB().then(() => {
     console.log("Connected to DB ***");
+    console.log("OK!");
 });
 
 module.exports = app;

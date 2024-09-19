@@ -18,6 +18,9 @@ const getCategoryWiseProduct = require('../controller/product/getCategoryWisePro
 
 
 
+router.get('/api', (req, res) => {
+    res.send('Express is working');
+  });
 
 router.post('/signup', userSignUpController);
 router.post('/signin', userSignInController);
