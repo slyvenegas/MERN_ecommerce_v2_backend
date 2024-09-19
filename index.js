@@ -1,41 +1,24 @@
-const express = require('express')
-const cors = require('cors')
-const cookieParser = require('cookie-parser')
-require ('dotenv').config()
-const connectDB = require('./config/db')
-const router = require('./routes')
+const express = require('express');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
+require('dotenv').config();
+const connectDB = require('./config/db');
+const router = require('./routes');
 
-const app = express()
+const app = express();
+
 app.use(cors({
-    origin : process.env.FRONTEND_URL,
-    credentials : true
-}))
-app.use(express.json())
-app.use(cookieParser())
+    origin: process.env.FRONTEND_URL,
+    credentials: true
+}));
+app.use(express.json());
+app.use(cookieParser());
 
-app.use("/api",router)
+app.use("/api", router);
 
-const PORT = process.env.PORT || 3000
+// No usar app.listen() en entornos sin servidor (Vercel)
+connectDB().then(() => {
+    console.log("Connected to DB ***");
+});
 
-connectDB().then(()=>{
-    app.listen(PORT,()=>{
-        console.log("Connect to DB ***")
-        console.log("Server now is running *** PORT: "+PORT)
-    })
-})
-
-app.get('/', (req, res) => {
-    res.send('Backend API running');
-  });
-
-  app.use((req, res, next) => {
-    res.status(404).json({ message: "Route not found" });
-  });
-
-
-
-// El archivo index.js es el punto de entrada
-// para tu aplicación backend.
-//  Aquí configuras el servidor, las dependencias
-// necesarias, y haces que tu aplicación esté
-// lista para aceptar peticiones.
+module.exports = app;
