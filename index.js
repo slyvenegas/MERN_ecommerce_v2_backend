@@ -24,6 +24,15 @@ connectDB().then(()=>{
     })
 })
 
+app.get('/', (req, res) => {
+    res.send('Backend API running');
+  });
+
+  app.use((req, res, next) => {
+    res.status(404).json({ message: "Route not found" });
+  });
+
+
 
 // El archivo index.js es el punto de entrada
 // para tu aplicación backend.
